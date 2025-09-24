@@ -1,6 +1,6 @@
 FROM ubuntu:22.04
 
-ARG CANN_VERSION=8.1.RC1
+ARG CANN_VERSION
 ARG TARGETPLATFORM
 ARG TARGETARCH
 ARG TARGETOS
@@ -63,7 +63,7 @@ COPY *.run /tmp/installers/
 # Run toolkit installer, set env in profiles, then kernels, non-interactively
 RUN set -e; \
    chmod +x /tmp/installers/*.run; \
-   /tmp/installers/Ascend-cann-toolkit_8.1.RC1_linux-aarch64.run --install --quiet; \
+   /tmp/installers/Ascend-cann-toolkit_*.run --install --quiet; \
    echo '[ -f /usr/local/Ascend/ascend-toolkit/set_env.sh ] && . /usr/local/Ascend/ascend-toolkit/set_env.sh' > /etc/profile.d/ascend-toolkit.sh; \
    chmod 644 /etc/profile.d/ascend-toolkit.sh; \
    echo 'if [ -f /usr/local/Ascend/ascend-toolkit/set_env.sh ]; then source /usr/local/Ascend/ascend-toolkit/set_env.sh; fi' >> /etc/profile; \
