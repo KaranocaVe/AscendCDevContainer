@@ -20,3 +20,10 @@ Notes
 - arm64 builds run on a self-hosted ARM64 runner; amd64 runs on `ubuntu-latest`.
 - Dockerfile expects the two `.run` files present in build context; the workflow downloads them before build.
 - `valid.sh` performs basic runtime checks inside the built image.
+
+Local build (equivalent to Action)
+- Prepare `version.env` (same as in branch): set `CANN_VERSION`, `KERNEL_VARIANT`, optional `BASE_URL`.
+- Run:
+  - `./build-local.sh` to build both arch images locally
+  - `./build-local.sh --amd64` or `--arm64` to build single arch
+  - `./build-local.sh --push` to push both arch and create multi-arch manifest (requires `docker login`)
