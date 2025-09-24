@@ -72,25 +72,37 @@ build_arch() {
 }
 
 usage() {
-  echo "Usage: $0 [--amd64] [--arm64] [--push]"
+  echo "Usage: $0 [--amd64] [--arm64] [--push] [--image-repo <name>]"
+  echo "  --amd64              Build linux/amd64 only"
+  echo "  --arm64              Build linux/arm64 only"
+  echo "  --push               Push images and create multi-arch manifest"
+  echo "  --image-repo <name>  Override image repo (default: \"$IMAGE_REPO\")"
 }
 
 DO_PUSH=false
 DO_AMD64=false
 DO_ARM64=false
-for a in "$@"; do
-  case "$a" in
-    --push) DO_PUSH=true ;;
-    --amd64) DO_AMD64=true ;;
-    --arm64) DO_ARM64=true ;;
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --push) DO_PUSH=true; shift ;;
+    --amd64) DO_AMD64=true; shift ;;
+    --arm64) DO_ARM64=true; shift ;;
+    --image-repo) IMAGE_REPO="$2"; shift 2 ;;
     -h|--help) usage; exit 0 ;;
-    *) echo "Unknown arg: $a" >&2; usage; exit 1 ;;
+    *) echo "Unknown arg: $1" >&2; usage; exit 1 ;;
   esac
 done
 if ! $DO_AMD64 && ! $DO_ARM64; then DO_AMD64=true; DO_ARM64=true; fi
 
 # Ensure buildx
 docker buildx ls >/dev/null 2>&1 || docker buildx create --use
+
+echo "Configuration:"
+echo "  CANN_VERSION     = $CANN_VERSION"
+echo "  KERNEL_VARIANT   = $KERNEL_VARIANT"
+echo "  BASE_URL         = $BASE_URL"
+echo "  IMAGE_REPO       = $IMAGE_REPO"
+echo "  DATE             = $DATE"
 
 if $DO_AMD64; then
   build_arch linux/amd64 x86_64 linux-x86_64

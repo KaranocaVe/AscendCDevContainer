@@ -26,4 +26,5 @@ Local build (equivalent to Action)
 - Run:
   - `./build-local.sh` to build both arch images locally
   - `./build-local.sh --amd64` or `--arm64` to build single arch
+  - `./build-local.sh --image-repo yourname/ascend-cann` to override repo
   - `./build-local.sh --push` to push both arch and create multi-arch manifest (requires `docker login`)
