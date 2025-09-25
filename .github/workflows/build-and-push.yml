@@ -5,6 +5,7 @@ on:
   push:
     branches-ignore:
       - main
+      - release/8.1.RC1
 
 jobs:
   build-amd64:

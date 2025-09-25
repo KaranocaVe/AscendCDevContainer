@@ -18,7 +18,7 @@ set -a; source version.env; set +a
 : "${KERNEL_VARIANT:?KERNEL_VARIANT is required in version.env}"
 : "${BASE_URL:=https://ascend-repo.obs.cn-east-2.myhuaweicloud.com/CANN}"
 
-IMAGE_REPO=${IMAGE_REPO:-"${DOCKERHUB_USERNAME:-${USER}}/ascend-cann"}
+IMAGE_REPO=${IMAGE_REPO:-"${DOCKERHUB_USERNAME:-${USER}}/ascendcanntoolkit"}
 DATE=$(date +%Y%m%d)
 VERSION_LOWER=$(echo "$CANN_VERSION" | tr '[:upper:]' '[:lower:]')
 
@@ -119,12 +119,12 @@ echo "  BASE_URL         = $BASE_URL"
 echo "  IMAGE_REPO       = $IMAGE_REPO"
 echo "  DATE             = $DATE"
 
-if $DO_AMD64; then
-  build_arch linux/amd64 x86_64 linux-x86_64
-fi
-if $DO_ARM64; then
-  build_arch linux/arm64 arm64 linux-aarch64
-fi
+# if $DO_AMD64; then
+#   build_arch linux/amd64 x86_64 linux-x86_64
+# fi
+# if $DO_ARM64; then
+#   build_arch linux/arm64 arm64 linux-aarch64
+# fi
 
 if $DO_PUSH; then
   echo "==> Pushing images and creating manifest"
