@@ -24,6 +24,10 @@ VERSION_LOWER=$(echo "$CANN_VERSION" | tr '[:upper:]' '[:lower:]')
 
 download_with_headers() {
   local url="$1" out="$2"
+  if [[ -f "$out" ]]; then
+    echo "  $out already exists, skipping download"
+    return 0
+  fi
   local UA='Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36 Edg/140.0.0.0'
   curl -L --fail -o "$out" "$url" \
     -H 'Host: ascend-repo.obs.cn-east-2.myhuaweicloud.com' \
@@ -59,16 +63,27 @@ build_arch() {
   download_with_headers "$KERNELS_URL" "$KERNELS_FILE"
   download_with_headers "$TOOLKIT_URL" "$TOOLKIT_FILE"
 
+  # Create temporary build context with only this arch's installers
+  local build_dir="build-${tag_suffix}"
+  rm -rf "$build_dir"
+  mkdir -p "$build_dir"
+  cp Dockerfile version.env valid.sh "$build_dir/"
+  cp "$KERNELS_FILE" "$TOOLKIT_FILE" "$build_dir/"
+
   echo "==> Building $platform"
   docker buildx build --platform "$platform" \
+    -f "$build_dir/Dockerfile" \
     -t "$IMAGE_REPO:${VERSION_LOWER}-${tag_suffix}" \
     -t "$IMAGE_REPO:${VERSION_LOWER}-${tag_suffix}-${DATE}" \
     --build-arg CANN_VERSION="$CANN_VERSION" \
     --load \
-    .
+    "$build_dir"
 
   echo "==> Validating $platform"
   REPO="$IMAGE_REPO" TAG="${VERSION_LOWER}-${tag_suffix}" bash ./valid.sh
+
+  # Clean up build context
+  rm -rf "$build_dir"
 }
 
 usage() {
